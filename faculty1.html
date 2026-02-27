@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty ERP System</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#f4f6f9;}
+header{background:#2c3e50;color:white;padding:15px;text-align:center;}
+nav{display:flex;overflow:auto;background:#34495e;}
+nav button{flex:1;padding:12px;border:none;background:none;color:white;font-size:14px;}
+nav button:hover{background:#2c3e50;}
+.section{display:none;padding:15px;}
+.active{display:block;}
+.card{background:white;padding:15px;border-radius:8px;margin-bottom:15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+input,select,textarea{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:1px solid #ccc;}
+button.action{background:#2980b9;color:white;border:none;padding:8px 12px;border-radius:5px;margin-top:8px;}
+button.logout{background:red;color:white;border:none;padding:6px 10px;border-radius:5px;float:right;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th,td{border:1px solid #ddd;padding:8px;text-align:center;}
+th{background:#2980b9;color:white;}
+.analytics-box{display:flex;justify-content:space-between;margin-top:10px;}
+.analytics-item{background:#ecf0f1;padding:10px;border-radius:6px;width:48%;text-align:center;}
+.bar{height:20px;background:#27ae60;margin-top:5px;border-radius:5px;}
+@media(max-width:600px){
+nav button{font-size:12px;padding:10px;}
+.analytics-box{flex-direction:column;}
+.analytics-item{width:100%;margin-bottom:10px;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+Faculty ERP Dashboard
+<button class="logout" onclick="logout()">Logout</button>
+</header>
+
+<!-- LOGIN -->
+<div id="loginSection" class="section active">
+<div class="card">
+<h3>Secure Login</h3>
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+<button class="action" onclick="login()">Login</button>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;">
+
+<nav>
+<button onclick="showSection('classes')">Classes</button>
+<button onclick="showSection('materials')">Materials</button>
+<button onclick="showSection('attendance')">Attendance</button>
+<button onclick="showSection('marks')">Marks</button>
+<button onclick="showSection('announcements')">Announcements</button>
+<button onclick="showSection('reports')">Reports</button>
+<button onclick="showSection('exams')">Exams</button>
+<button onclick="showSection('analytics')">Analytics</button>
+</nav>
+
+<!-- CLASSES -->
+<div id="classes" class="section active">
+<div class="card">
+<h3>Assigned Classes & Subjects</h3>
+<ul>
+<li>B.Tech CSE - Software Engineering</li>
+<li>B.Tech CSE - Cloud computing</li>
+<li>B.Tech CSE - Machine Learning</li>
+</ul>
+</div>
+</div>
+
+<!-- MATERIALS -->
+<div id="materials" class="section">
+<div class="card">
+<h3>Upload Notes / Assignments</h3>
+<input type="text" id="materialTitle" placeholder="Title">
+<textarea id="materialDesc" placeholder="Description"></textarea>
+<button class="action" onclick="addMaterial()">Upload</button>
+<ul id="materialList"></ul>
+</div>
+</div>
+
+<!-- ATTENDANCE -->
+<div id="attendance" class="section">
+<div class="card">
+<h3>Section Wise Attendance</h3>
+
+<select id="sectionSelect">
+<option value="CSE-A">CSE-A</option>
+<option value="CSE-B">CSE-B</option>
+<option value="CSE-C">CSE-C</option>
+</select>
+
+<input type="date" id="attendanceDate">
+<button class="action" onclick="loadStudents()">Load Students</button>
+
+<div id="studentList"></div>
+
+<button class="action" onclick="saveAttendance()">Save Attendance</button>
+
+<h4>Saved Records</h4>
+<div id="attendanceRecords"></div>
+
+</div>
+</div>
+
+<!-- MARKS -->
+<div id="marks" class="section">
+<div class="card">
+<h3>Upload Marks</h3>
+<input type="text" id="studentMarkName" placeholder="Student Name">
+<input type="number" id="studentMarks" placeholder="Marks">
+<button class="action" onclick="addMarks()">Add</button>
+
+<table>
+<tr><th>Name</th><th>Marks</th><th>Grade</th></tr>
+<tbody id="marksTable"></tbody>
+</table>
+</div>
+</div>
+
+<!-- ANNOUNCEMENTS -->
+<div id="announcements" class="section">
+<div class="card">
+<h3>Send Announcement</h3>
+<textarea id="announcementText"></textarea>
+<button class="action" onclick="addAnnouncement()">Send</button>
+<ul id="announcementList"></ul>
+</div>
+</div>
+
+<!-- REPORTS -->
+<div id="reports" class="section">
+<div class="card">
+<h3>Performance Report</h3>
+<p>Total Students: <span id="totalStudents">0</span></p>
+<p>Average Marks: <span id="avgMarks">0</span></p>
+</div>
+</div>
+
+<!-- EXAMS -->
+<div id="exams" class="section">
+<div class="card">
+<h3>Schedule Exam</h3>
+<input type="text" id="examTitle" placeholder="Exam Title">
+<input type="date" id="examDate">
+<button class="action" onclick="addExam()">Schedule</button>
+<ul id="examList"></ul>
+</div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="analytics" class="section">
+<div class="card">
+<h3>Attendance Analytics Dashboard</h3>
+
+<div class="analytics-box">
+<div class="analytics-item">
+<h4>Total Records</h4>
+<p id="totalRecords">0</p>
+</div>
+<div class="analytics-item">
+<h4>Overall Attendance %</h4>
+<p id="overallPercent">0%</p>
+</div>
+</div>
+
+<h4>Section Performance</h4>
+<div id="sectionAnalytics"></div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+/* DATABASE */
+const studentDatabase={
+"CSE-A":["Uma","Sneha","Vasu","Anjali","Varun"],
+"CSE-B":["Ramesh","Priya","Arjun","Nandu","Vikram"],
+"CSE-C":["Suresh","Divya","Manoj","Keerthi","Ajay"]
+};
+
+let materials=[],marksData=[],announcements=[],exams=[];
+let attendanceStorage=[];
+
+/* LOGIN */
+function login(){
+let u=document.getElementById("username").value;
+let p=document.getElementById("password").value;
+if(u==="faculty"&&p==="1234"){
+document.getElementById("loginSection").style.display="none";
+document.getElementById("dashboard").style.display="block";
+}else alert("Invalid Login");
+}
+function logout(){location.reload();}
+
+/* NAVIGATION */
+function showSection(id){
+document.querySelectorAll(".section").forEach(sec=>sec.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+if(id==="analytics") updateAnalytics();
+}
+
+/* MATERIALS */
+function addMaterial(){
+let title=document.getElementById("materialTitle").value;
+materials.push(title);
+document.getElementById("materialList").innerHTML+=`<li>${title}</li>`;
+}
+
+/* ATTENDANCE */
+function loadStudents(){
+let section=document.getElementById("sectionSelect").value;
+let students=studentDatabase[section];
+let container=document.getElementById("studentList");
+container.innerHTML="";
+students.forEach(name=>{
+container.innerHTML+=`
+<div>
+<label>
+<input type="checkbox" value="${name}">
+${name} (Check = Present)
+</label>
+</div>`;
+});
+}
+
+function saveAttendance(){
+let section=document.getElementById("sectionSelect").value;
+let date=document.getElementById("attendanceDate").value;
+if(!date){alert("Select Date");return;}
+
+let checkboxes=document.querySelectorAll("#studentList input");
+let record={section,date,students:[]};
+
+checkboxes.forEach(cb=>{
+record.students.push({
+name:cb.value,
+status:cb.checked?"Present":"Absent"
+});
+});
+
+attendanceStorage.push(record);
+displayRecords();
+alert("Attendance Saved!");
+}
+
+function displayRecords(){
+let div=document.getElementById("attendanceRecords");
+div.innerHTML="";
+attendanceStorage.forEach(rec=>{
+let present=rec.students.filter(s=>s.status==="Present").length;
+let total=rec.students.length;
+let percent=((present/total)*100).toFixed(2);
+div.innerHTML+=`
+<div><b>${rec.section}</b> - ${rec.date}<br>
+Present: ${present}/${total} (${percent}%)</div><br>`;
+});
+}
+
+/* ANALYTICS */
+function updateAnalytics(){
+document.getElementById("totalRecords").innerText=attendanceStorage.length;
+let totalPresent=0,totalStudents=0,sectionData={};
+
+attendanceStorage.forEach(rec=>{
+let present=rec.students.filter(s=>s.status==="Present").length;
+let total=rec.students.length;
+totalPresent+=present;
+totalStudents+=total;
+
+if(!sectionData[rec.section]) sectionData[rec.section]={present:0,total:0};
+sectionData[rec.section].present+=present;
+sectionData[rec.section].total+=total;
+});
+
+let overall= totalStudents?((totalPresent/totalStudents)*100).toFixed(2):0;
+document.getElementById("overallPercent").innerText=overall+"%";
+
+let sectionDiv=document.getElementById("sectionAnalytics");
+sectionDiv.innerHTML="";
+for(let sec in sectionData){
+let percent=(sectionData[sec].present/sectionData[sec].total*100).toFixed(2);
+sectionDiv.innerHTML+=`
+<div>${sec} - ${percent}%
+<div class="bar" style="width:${percent}%;"></div></div>`;
+}
+}
+
+/* MARKS */
+function addMarks(){
+let name=document.getElementById("studentMarkName").value;
+let mark=parseInt(document.getElementById("studentMarks").value);
+if(!name||isNaN(mark)) return alert("Enter valid data");
+let grade=mark>=90?"A+":mark>=80?"A":mark>=70?"B":mark>=60?"C":mark>=50?"D":"F";
+marksData.push({name,mark,grade});
+renderMarks();updateReport();
+}
+
+function renderMarks(){
+let table=document.getElementById("marksTable");
+table.innerHTML="";
+marksData.forEach(m=>{
+table.innerHTML+=`<tr><td>${m.name}</td><td>${m.mark}</td><td>${m.grade}</td></tr>`;
+});
+}
+
+function updateReport(){
+let total=marksData.length;
+let avg= total?(marksData.reduce((s,m)=>s+m.mark,0)/total).toFixed(2):0;
+document.getElementById("totalStudents").innerText=total;
+document.getElementById("avgMarks").innerText=avg;
+}
+
+/* ANNOUNCEMENTS */
+function addAnnouncement(){
+let text=document.getElementById("announcementText").value;
+announcements.push(text);
+document.getElementById("announcementList").innerHTML+=`<li>${text}</li>`;
+}
+
+/* EXAMS */
+function addExam(){
+let title=document.getElementById("examTitle").value;
+let date=document.getElementById("examDate").value;
+exams.push({title,date});
+document.getElementById("examList").innerHTML+=`<li>${title} - ${date}</li>`;
+}
+
+</script>
+
+</body>
+</html>
